@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AnunciaIcarsm | Veículos à venda</title>
+<meta name="description" content="Carros, motos, tratores e outros veículos à venda. Fale direto pelo WhatsApp.">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#0C121A;
+    --bar:#101823;
+    --surface:#141D29;
+    --surface-2:#1B2635;
+    --line:#263447;
+    --text:#E9EEF5;
+    --muted:#9AA8BA;
+    --accent:#3DB8F5;
+    --accent-ink:#04141F;
+    --wa:#0F7A40;
+    --wa-hover:#139049;
+    --info-bg:#0F2F46;  --info:#7CCBFF;
+    --good-bg:#12351F;  --good:#5FD38A;
+    --warn-bg:#3A2E08;  --warn:#F6CF4A;
+    --font-display:'Barlow Condensed','Arial Narrow',Impact,sans-serif;
+    --font-body:'Public Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.5 var(--font-body);-webkit-text-size-adjust:100%}
+  body:has(dialog[open]){overflow:hidden}
+  a{color:inherit}
+  .wrap{width:min(1240px,100% - 32px);margin-inline:auto}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* Cabeçalho */
+  .top{background:var(--bar);border-bottom:1px solid var(--line)}
+  .top-in{display:flex;align-items:center;gap:28px;min-height:68px}
+  .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none}
+  .mark{width:34px;height:34px;flex:none}
+  .brand-name{font:700 30px/1 var(--font-display);letter-spacing:.01em}
+  .nav{display:flex;gap:22px;margin-right:auto}
+  .nav a{padding:8px 2px;font-weight:600;text-decoration:none}
+  .nav a:hover{color:var(--accent)}
+  .loc{display:grid;line-height:1.2;text-align:right}
+  .loc small{color:var(--muted);font-size:12px}
+  .loc strong{font-size:14px}
+  .top-right{display:flex;align-items:center;gap:18px;margin-left:auto}
+  .nav + .top-right{margin-left:0}
+
+  /* Botões */
+  .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border:2px solid transparent;border-radius:8px;font:600 15px/1.2 var(--font-body);text-align:center;text-decoration:none;cursor:pointer;transition:background-color .15s,color .15s,border-color .15s}
+  .btn.full{grid-column:1/-1}
+  .btn-accent{background:var(--accent);color:var(--accent-ink)}
+  .btn-accent:hover{background:#6accfa}
+  .btn-wa{background:var(--wa);color:#fff}
+  .btn-wa:hover{background:var(--wa-hover)}
+  .btn-ghost{background:transparent;color:var(--text);border-color:var(--line)}
+  .btn-ghost:hover{background:var(--surface-2)}
+  .btn-pay{background:transparent;color:var(--accent);border-color:var(--accent)}
+  .btn-pay:hover{background:var(--accent);color:var(--accent-ink)}
+  .btn-clear{width:100%;background:var(--surface-2);color:var(--text);border-color:var(--line)}
+  .btn-clear:not(:disabled):hover{border-color:var(--accent);color:var(--accent)}
+  .btn-clear:disabled{background:var(--surface);color:#6F7D90;cursor:not-allowed}
+
+  /* Barra de tipo, busca e ordem */
+  .bar{background:var(--bar);border-bottom:1px solid var(--line)}
+  .bar-in{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 0}
+  .pills{display:flex;flex-wrap:wrap;gap:8px}
+  .pill{min-height:40px;padding:0 20px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font:600 15px/1 var(--font-body);cursor:pointer}
+  .pill:hover{border-color:var(--accent)}
+  .pill[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .filt-btn{display:none;align-items:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font:600 15px/1 var(--font-body);cursor:pointer}
+  .bar-r{display:flex;flex-wrap:wrap;gap:12px;margin-left:auto;flex:1 1 360px;justify-content:flex-end}
+  .search{position:relative;flex:1 1 220px;max-width:360px}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+  .search .inp{padding-left:40px}
+  .inp{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);font:inherit}
+  .inp::placeholder{color:#7F8DA0}
+  select.inp{width:auto;min-width:170px}
+
+  /* Estrutura */
+  .layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:28px;padding:24px 0 56px}
+  .side{position:sticky;top:16px;align-self:start;display:grid;gap:22px}
+  .side-h{display:flex;align-items:center;gap:12px;margin:0 0 12px;color:var(--muted);font:600 14px/1 var(--font-body)}
+  .side-h::after{content:"";flex:1;height:1px;background:var(--line)}
+  .brands{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .brand-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:56px;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);font:600 13px/1.2 var(--font-body);text-align:center;cursor:pointer}
+  .brand-tile small{color:var(--muted);font-weight:500}
+  .brand-tile:hover{border-color:var(--accent)}
+  .brand-tile[aria-pressed="true"]{border-color:var(--accent);background:var(--info-bg);box-shadow:inset 0 0 0 1px var(--accent)}
+  .more{display:block;margin:12px auto 0;padding:6px 10px;border:0;background:none;color:var(--accent);font:600 14px/1 var(--font-body);cursor:pointer}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .muted{margin:0;color:var(--muted);font-size:14px}
+
+  .crumbs{display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:14px}
+  .crumbs a{text-decoration:none}
+  .crumbs a:hover{color:var(--accent)}
+  .crumbs [aria-current]{color:var(--accent)}
+  h1{margin:10px 0 4px;font:700 28px/1.2 var(--font-body)}
+  .count{margin:0 0 20px;color:var(--muted)}
+
+  /* Cartões */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:20px}
+  .card{display:flex;flex-direction:column;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+  .frame{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--surface-2)}
+  .card .frame{cursor:pointer}
+  .pic{position:absolute;inset:0}
+  .pic img{display:block;width:100%;height:100%;object-fit:cover}
+  .ph{display:grid;place-content:center;justify-items:center;gap:6px;width:100%;height:100%;color:#6F7D90}
+  .ph svg{width:96px;height:auto}
+  .ph span{font-size:13px}
+  .tag,.counter{position:absolute;padding:5px 9px;border-radius:6px;background:rgba(8,14,22,.78);color:#fff;font:600 12px/1 var(--font-body)}
+  .tag{left:10px;top:10px}
+  .counter{left:10px;bottom:10px}
+  .badge{position:absolute;right:10px;top:10px;padding:5px 9px;border-radius:6px;background:var(--warn);color:#1b1500;font:700 12px/1 var(--font-body)}
+  .badge.sold{background:#05080c;color:#fff}
+  .nav-btn{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;padding:0 0 3px;border:1px solid rgba(255,255,255,.28);border-radius:50%;background:rgba(8,14,22,.7);color:#fff;font-size:24px;line-height:1;cursor:pointer}
+  .nav-btn:hover{background:rgba(8,14,22,.92)}
+  .nav-btn.prev{left:8px}
+  .nav-btn.next{right:8px}
+  .is-sold .pic img,.is-sold .pic .ph{filter:grayscale(1);opacity:.65}
+  .body{display:flex;flex-direction:column;flex:1;gap:14px;padding:16px}
+  .title{margin:0;font:700 23px/1.1 var(--font-display);letter-spacing:.03em;text-transform:uppercase}
+  .link{padding:0;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;text-align:left;text-transform:inherit;cursor:pointer}
+  .link:hover{color:var(--accent)}
+  .sub{margin:3px 0 0;color:var(--muted);font-size:14px}
+  .row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:auto}
+  .facts{display:grid;gap:6px;margin:0;padding:0;list-style:none;color:var(--muted);font-size:14px}
+  .facts li{display:flex;align-items:center;gap:8px}
+  .price-box{display:grid;justify-items:end;gap:8px;text-align:right}
+  .price{font:700 32px/1 var(--font-display);white-space:nowrap}
+  .price .cur{margin-right:4px;font-size:15px;font-weight:600}
+  .price .ask{font:600 16px/1.2 var(--font-body)}
+  .dest{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font:600 13px/1.2 var(--font-body)}
+  .dest.info{background:var(--info-bg);color:var(--info)}
+  .dest.good{background:var(--good-bg);color:var(--good)}
+  .dest.warn{background:var(--warn-bg);color:var(--warn)}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .note{margin:0;padding:12px;border-radius:8px;background:var(--surface-2);color:var(--muted);font-size:14px}
+  .note.full{grid-column:1/-1}
+  .empty{grid-column:1/-1;display:grid;justify-items:center;gap:14px;padding:56px 16px;text-align:center;color:var(--muted)}
+  .empty p{margin:0}
+
+  /* Detalhes */
+  dialog{width:min(940px,100% - 24px);max-height:calc(100% - 24px);padding:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text)}
+  dialog::backdrop{background:rgba(2,6,12,.75)}
+  .d-in{display:grid;grid-template-columns:1.15fr 1fr}
+  .d-gal{background:var(--surface-2)}
+  .d-thumbs{display:flex;gap:6px;padding:8px;overflow-x:auto}
+  .d-thumbs button{flex:0 0 64px;height:48px;padding:0;border:2px solid transparent;border-radius:6px;overflow:hidden;background:none;cursor:pointer}
+  .d-thumbs button[aria-current="true"]{border-color:var(--accent)}
+  .d-thumbs img{display:block;width:100%;height:100%;object-fit:cover}
+  .d-info{display:flex;flex-direction:column;gap:14px;padding:20px}
+  .d-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .d-head h2{margin:0;font:700 28px/1.05 var(--font-display);letter-spacing:.03em;text-transform:uppercase}
+  .d-close{flex:none;width:44px;height:44px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--text);font-size:26px;line-height:1;cursor:pointer}
+  .d-close:hover{background:var(--surface-2)}
+  .d-price{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .d-price .price{font-size:40px}
+  .d-desc{margin:0;color:#C7D1DE;white-space:pre-line}
+  .d-specs{margin:0}
+  .d-specs div{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid var(--line)}
+  .d-specs dt{color:var(--muted)}
+  .d-specs dd{margin:0;font-weight:600;text-align:right}
+
+  .foot{padding:24px 0 40px;border-top:1px solid var(--line);background:var(--bar);color:var(--muted);font-size:14px}
+  .foot .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+  .foot p{margin:0}
+  .foot a{color:var(--accent);font-weight:600}
+
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr}
+    .side{display:none;position:static}
+    .side.open{display:grid;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--bar)}
+    .filt-btn{display:inline-flex}
+  }
+  @media (max-width:820px){.nav{display:none}.top-right{margin-left:auto}}
+  @media (max-width:640px){.loc{display:none}.brand-name{font-size:26px}.bar-r{flex-basis:100%;justify-content:stretch}.search{max-width:none}select.inp{flex:1 1 150px}}
+  @media (max-width:760px){.d-in{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="./" id="brandLink">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#3DB8F5"/><path d="M8 22l8-13 8 13M11.5 17h9" fill="none" stroke="#04141F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="brand-name" id="lojaNome"></span>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#lista">Comprar</a>
+      <a id="navVender" href="#" target="_blank" rel="noopener">Vender</a>
+      <a id="navContato" href="#" target="_blank" rel="noopener">Contato</a>
+    </nav>
+    <div class="top-right">
+      <div class="loc" id="loc"><small>Estamos em</small><strong id="lojaCidade"></strong></div>
+      <a class="btn btn-accent" id="topWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap bar-in">
+    <div class="pills" id="pills" role="group" aria-label="Tipo de veículo"></div>
+    <button type="button" class="filt-btn" id="filtBtn" aria-expanded="false" aria-controls="side">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>
+      Filtros
+    </button>
+    <div class="bar-r">
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <label class="sr" for="busca">Buscar veículo</label>
+        <input class="inp" id="busca" type="search" placeholder="Buscar por marca, modelo" autocomplete="off">
+      </div>
+      <label class="sr" for="ordem">Ordenar por</label>
+      <select class="inp" id="ordem">
+        <option value="recentes">Mais recentes</option>
+        <option value="menor">Menor preço</option>
+        <option value="maior">Maior preço</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="lista">
+  <div class="layout">
+    <aside class="side" id="side" aria-label="Filtros">
+      <section>
+        <h2 class="side-h">Marca</h2>
+        <div class="brands" id="brands"></div>
+        <button type="button" class="more" id="moreBrands" hidden>Ver mais</button>
+      </section>
+      <section>
+        <h2 class="side-h">Ano</h2>
+        <div class="pair">
+          <label class="sr" for="anoDe">Ano a partir de</label>
+          <input class="inp" id="anoDe" inputmode="numeric" placeholder="De" autocomplete="off">
+          <label class="sr" for="anoAte">Ano até</label>
+          <input class="inp" id="anoAte" inputmode="numeric" placeholder="Até" autocomplete="off">
+        </div>
+      </section>
+      <section>
+        <h2 class="side-h">Preço</h2>
+        <label class="sr" for="precoAte">Preço máximo</label>
+        <input class="inp" id="precoAte" inputmode="numeric" placeholder="Até R$" autocomplete="off">
+      </section>
+      <button type="button" class="btn btn-clear" id="clear" disabled>Limpar filtros</button>
+    </aside>
+
+    <div class="content">
+      <nav class="crumbs" id="crumbs" aria-label="Você está em"></nav>
+      <h1 id="h1"></h1>
+      <p class="count" id="count" aria-live="polite"></p>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><span id="footNome"></span> © <span id="ano"></span>. Preços e disponibilidade sujeitos a confirmação.</p>
+    <a id="footWa" href="#" target="_blank" rel="noopener">Falar no WhatsApp</a>
+  </div>
+</footer>
+
+<dialog id="dlg" aria-labelledby="dTitle"><div id="dlgBody"></div></dialog>
+
+<script>
+/* =====================================================================
+   COMO USAR (é só editar esta parte do arquivo)
+
+   1) Em LOJA, troque a cidade e o número do WhatsApp.
+      - whatsapp: país + DDD + número, só dígitos. Ex.: 5594912345678
+      - cidade: aparece no topo e no título. Deixe "" para esconder.
+
+   2) Para anunciar, adicione um bloco { ... } na lista VEICULOS.
+      Coloque os mais novos NO TOPO da lista.
+
+      titulo        nome do veículo. Ex.: "Toyota Yaris" (obrigatório)
+      subtitulo     versão. Ex.: "1.5 XS Connect CVT"
+      marca         marca, usada no filtro lateral. Ex.: "Toyota"
+      tipo          texto livre: "Carro", "Moto", "Trator", "Caminhão",
+                    "Barco"... Os botões do topo criam o tipo sozinhos.
+      ano           número. Ex.: 2022 (usado também no filtro de ano)
+      preco         número (38900). Use 0 para mostrar "Consulte o valor".
+      status        "disponivel" | "reservado" | "vendido"
+      destaque      selo ao lado do preço. Ex.: "Bom preço"
+      destaqueCor   "azul" (padrão) | "verde" | "amarelo"
+      detalhes      características livres. Ex.: "Km": "33.000 km",
+                    "Horas de uso": "3.200 h", "Potência": "75 cv".
+                    (os 2 primeiros aparecem no cartão, todos no detalhe)
+      descricao     texto do anúncio
+      fotos         lista de fotos. Suba as imagens numa pasta "fotos" do
+                    repositório e use o caminho: ["fotos/gol-1.jpg"]
+      linkPagamento link de pagamento (Mercado Pago, Stripe, PagSeguro...).
+                    Deixe "" se não quiser o botão "Pagar ou reservar".
+   ===================================================================== */
+
+const LOJA = {
+  nome: "AnunciaIcarsm",
+  cidade: "Sua cidade/UF",
+  whatsapp: "5500000000000"
+};
+
+const VEICULOS = [
+  {
+    titulo: "Volkswagen Gol", subtitulo: "1.0 Flex 4 portas", marca: "Volkswagen", tipo: "Carro",
+    ano: 2019, preco: 38900, status: "disponivel", destaque: "Bom preço",
+    detalhes: { "Km": "62.000 km", "Câmbio": "Manual", "Combustível": "Flex", "Cor": "Prata" },
+    descricao: "ANÚNCIO DE EXEMPLO: apague este bloco e coloque os seus veículos.\nÚnico dono, documentação em dia, revisões feitas.",
+    fotos: [],
+    linkPagamento: "https://link.mercadopago.com.br/SEU-LINK-AQUI"
+  },
+  {
+    titulo: "Hyundai HB20", subtitulo: "1.0 Turbo Automático", marca: "Hyundai", tipo: "Carro",
+    ano: 2021, preco: 72500, status: "disponivel", destaque: "Super preço", destaqueCor: "verde",
+    detalhes: { "Km": "41.000 km", "Câmbio": "Automático", "Combustível": "Flex" },
+    descricao: "ANÚNCIO DE EXEMPLO. Veículo revisado, pneus novos.",
+    fotos: [],
+    linkPagamento: ""
+  },
+  {
+    titulo: "Honda CG 160", subtitulo: "Start", marca: "Honda", tipo: "Moto",
+    ano: 2021, preco: 14500, status: "disponivel",
+    detalhes: { "Km": "18.000 km", "Cilindrada": "160 cc", "Cor": "Vermelha" },
+    descricao: "ANÚNCIO DE EXEMPLO. Moto revisada, chave reserva.",
+    fotos: [],
+    linkPagamento: ""
+  },
+  {
+    titulo: "Massey Ferguson 275", subtitulo: "4x4 com 75 cv", marca: "Massey Ferguson", tipo: "Trator",
+    ano: 2010, preco: 0, status: "reservado",
+    detalhes: { "Horas de uso": "3.200 h", "Potência": "75 cv", "Tração": "4x4" },
+    descricao: "ANÚNCIO DE EXEMPLO. Trator em bom estado. Valor sob consulta.",
+    fotos: [],
+    linkPagamento: ""
+  },
+  {
+    titulo: "Fiat Toro", subtitulo: "Freedom 1.8 Automática", marca: "Fiat", tipo: "Picape",
+    ano: 2020, preco: 98000, status: "vendido",
+    detalhes: { "Km": "55.000 km", "Câmbio": "Automático" },
+    descricao: "ANÚNCIO DE EXEMPLO: veículo vendido aparece em cinza e sem botões de compra.",
+    fotos: [],
+    linkPagamento: ""
+  }
+];
+
+/* ======================= código do site (não precisa mexer) ======================= */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const nf = new Intl.NumberFormat('pt-BR', {maximumFractionDigits:2});
+const hasPrice = v => typeof v.preco === 'number' && v.preco > 0;
+const priceText = v => hasPrice(v) ? 'R$ ' + nf.format(v.preco) : 'Consulte o valor';
+const priceHTML = v => `<span class="price">${hasPrice(v) ? `<span class="cur">R$</span>${esc(nf.format(v.preco))}` : '<span class="ask">Consulte o valor</span>'}</span>`;
+const digits = s => { const d = String(s ?? '').replace(/\D/g, ''); return d ? Number(d) : null; };
+const wa = msg => `https://wa.me/${String(LOJA.whatsapp).replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`;
+function safeUrl(u){
+  if(!u) return '';
+  try{ const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ''; }
+  catch(e){ return ''; }
+}
+
+/* ícones */
+const SVG = p => `<svg viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const ICONS = {
+  carro: SVG('<path d="M12 54v-11q0-5 5-6l13-3 12-13h32l14 14 13 3q5 1 5 6v10h-8M12 54h16M44 54h36M96 54h2M52 25v10M66 25v10"/><circle cx="36" cy="55" r="8"/><circle cx="88" cy="55" r="8"/>'),
+  moto: SVG('<circle cx="28" cy="56" r="14"/><circle cx="94" cy="56" r="14"/><path d="M28 56l20-22h26l20 22M48 34l-5-11h-12M74 34l5-14h12M56 34l6 22"/>'),
+  trator: SVG('<circle cx="88" cy="52" r="20"/><circle cx="30" cy="62" r="10"/><path d="M18 42h40v12H18zM58 24h26v20H58zM27 42V28"/>'),
+  caminhao: SVG('<path d="M8 22h58v36H8zM66 32h26l14 14v12H66z"/><circle cx="28" cy="60" r="8"/><circle cx="90" cy="60" r="8"/>'),
+  generico: SVG('<path d="M20 44L46 18h32v32L52 76z"/><circle cx="66" cy="30" r="4"/>')
+};
+function iconFor(t){
+  const n = norm(t);
+  if(/moto|scooter/.test(n)) return ICONS.moto;
+  if(/trator|colheit|agric/.test(n)) return ICONS.trator;
+  if(/caminh|onibus|\bvan\b|utilitario/.test(n)) return ICONS.caminhao;
+  if(/carro|auto|picape|pickup|suv|sedan|hatch|camionete/.test(n)) return ICONS.carro;
+  return ICONS.generico;
+}
+const SI = p => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const SPEC = {
+  ano: SI('<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'),
+  km: SI('<path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/>'),
+  cambio: SI('<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>'),
+  comb: SI('<path d="M5 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M4 20h11M14 9h2.5a1.5 1.5 0 0 1 1.5 1.5V16a1.5 1.5 0 0 0 3 0V8l-3-3M7.5 8h4"/>'),
+  tag: SI('<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1"/>')
+};
+function specIcon(k){
+  const n = norm(k);
+  if(/^ano/.test(n)) return SPEC.ano;
+  if(/km|hora|quilom/.test(n)) return SPEC.km;
+  if(/cambio|marcha/.test(n)) return SPEC.cambio;
+  if(/combust/.test(n)) return SPEC.comb;
+  return SPEC.tag;
+}
+
+/* dados */
+const ITEMS = VEICULOS.map((v, i) => ({...v, _i:i}));
+const brandOf = v => v.marca || String(v.titulo).split(' ')[0];
+const photos = v => (v.fotos || []).map(safeUrl).filter(Boolean);
+const specList = v => [...(v.ano ? [['Ano', v.ano]] : []), ...Object.entries(v.detalhes || {})].filter(([, val]) => val !== '' && val != null);
+const destCls = v => v.destaqueCor === 'verde' ? 'good' : v.destaqueCor === 'amarelo' ? 'warn' : 'info';
+const pos = new Map();
+const state = {tipo:'Todos', q:'', sort:'recentes', marcas:new Set(), anoDe:null, anoAte:null, precoAte:null, allBrands:false};
+
+function frame(v, photo){
+  const src = safeUrl(photo);
+  return src
+    ? `<img src="${esc(src)}" alt="" loading="lazy" data-tipo="${esc(v.tipo)}">`
+    : `<div class="ph">${iconFor(v.tipo)}<span>Sem foto</span></div>`;
+}
+/* foto que não carrega vira o desenho do tipo de veículo */
+document.addEventListener('error', e => {
+  const t = e.target;
+  if(!t || t.tagName !== 'IMG' || !t.dataset.tipo) return;
+  const ph = document.createElement('div');
+  ph.className = 'ph';
+  ph.innerHTML = iconFor(t.dataset.tipo) + '<span>Sem foto</span>';
+  t.replaceWith(ph);
+}, true);
+
+function actions(v, inDlg){
+  if(v.status === 'vendido') return '<p class="note full">Este veículo já foi vendido.</p>';
+  const msg = `Olá! Tenho interesse neste veículo: ${v.titulo}${v.subtitulo ? ' ' + v.subtitulo : ''}${hasPrice(v) ? ` (${priceText(v)})` : ''}. Ainda está disponível?`;
+  let h = `<a class="btn btn-wa${inDlg ? ' full' : ''}" href="${esc(wa(msg))}" target="_blank" rel="noopener">${inDlg ? 'Chamar no WhatsApp' : 'WhatsApp'}</a>`;
+  if(!inDlg) h += `<button type="button" class="btn btn-ghost" data-open="${v._i}">Detalhes</button>`;
+  const pay = safeUrl(v.linkPagamento);
+  if(pay && v.status !== 'reservado'){
+    h += `<a class="btn btn-pay full" href="${esc(pay)}" target="_blank" rel="noopener">Pagar ou reservar</a>`;
+  }
+  return h;
+}
+
+function cardHTML(v){
+  const ph = photos(v), idx = Math.min(pos.get(v._i) || 0, Math.max(ph.length - 1, 0));
+  const sold = v.status === 'vendido';
+  const facts = specList(v).slice(0, 2)
+    .map(([k, val]) => `<li>${specIcon(k)}<span class="sr">${esc(k)}: </span><span>${esc(val)}</span></li>`).join('');
+  const badge = sold ? '<span class="badge sold">Vendido</span>' : v.status === 'reservado' ? '<span class="badge">Reservado</span>' : '';
+  const nav = ph.length > 1
+    ? `<button type="button" class="nav-btn prev" data-nav="-1" aria-label="Foto anterior">‹</button><button type="button" class="nav-btn next" data-nav="1" aria-label="Próxima foto">›</button><span class="counter">${idx + 1} / ${ph.length}</span>` : '';
+  const dest = v.destaque && !sold ? `<span class="dest ${destCls(v)}">${esc(v.destaque)}</span>` : '';
+  return `<article class="card${sold ? ' is-sold' : ''}" data-i="${v._i}">
+    <div class="frame" data-open="${v._i}"><div class="pic">${frame(v, ph[idx])}</div><span class="tag">${esc(v.tipo)}</span>${badge}${nav}</div>
+    <div class="body">
+      <div>
+        <h2 class="title"><button type="button" class="link" data-open="${v._i}">${esc(v.titulo)}</button></h2>
+        ${v.subtitulo ? `<p class="sub">${esc(v.subtitulo)}</p>` : ''}
+      </div>
+      <div class="row">
+        <ul class="facts">${facts}</ul>
+        <div class="price-box">${dest}${priceHTML(v)}</div>
+      </div>
+      <div class="actions">${actions(v, false)}</div>
+    </div>
+  </article>`;
+}
+
+function shot(card, d){
+  const i = +card.dataset.i, v = ITEMS[i], ph = photos(v);
+  if(ph.length < 2) return;
+  const k = ((pos.get(i) || 0) + d + ph.length) % ph.length;
+  pos.set(i, k);
+  card.querySelector('.pic').innerHTML = frame(v, ph[k]);
+  card.querySelector('.counter').textContent = `${k + 1} / ${ph.length}`;
+}
+
+function isActive(){
+  return state.tipo !== 'Todos' || state.q || state.marcas.size || state.anoDe || state.anoAte || state.precoAte;
+}
+
+function render(){
+  const q = norm(state.q);
+  let list = ITEMS.filter(v => {
+    if(state.tipo !== 'Todos' && v.tipo !== state.tipo) return false;
+    if(state.marcas.size && !state.marcas.has(brandOf(v))) return false;
+    const ano = Number(v.ano) || null;
+    if(state.anoDe && !(ano && ano >= state.anoDe)) return false;
+    if(state.anoAte && !(ano && ano <= state.anoAte)) return false;
+    if(state.precoAte && !(hasPrice(v) && v.preco <= state.precoAte)) return false;
+    if(q && !norm([v.titulo, v.subtitulo, v.marca, v.tipo, v.ano, v.descricao, ...Object.values(v.detalhes || {})].join(' ')).includes(q)) return false;
+    return true;
+  });
+  if(state.sort !== 'recentes'){
+    const dir = state.sort === 'menor' ? 1 : -1;
+    list.sort((a, b) => {
+      const x = hasPrice(a) ? a.preco : null, y = hasPrice(b) ? b.preco : null;
+      if(x === null && y === null) return 0;
+      if(x === null) return 1;
+      if(y === null) return -1;
+      return (x - y) * dir;
+    });
+  }
+  list = [...list.filter(v => v.status !== 'vendido'), ...list.filter(v => v.status === 'vendido')];
+
+  const disp = list.filter(v => v.status !== 'vendido').length;
+  $('#count').textContent = `${disp} ${disp === 1 ? 'veículo disponível' : 'veículos disponíveis'}`;
+  $('#crumbs').innerHTML = `<a href="./">Início</a><span aria-hidden="true">›</span>` +
+    (state.tipo === 'Todos' ? '<span aria-current="page">Veículos</span>'
+      : `<a href="#lista" data-crumb>Veículos</a><span aria-hidden="true">›</span><span aria-current="page">${esc(state.tipo)}</span>`);
+  $('#clear').disabled = !isActive();
+  $('#grid').innerHTML = list.length
+    ? list.map(cardHTML).join('')
+    : `<div class="empty">
+         <p>${ITEMS.length ? 'Nenhum veículo encontrado com esses filtros.' : 'Novos veículos em breve. Fale com a gente pelo WhatsApp.'}</p>
+         ${ITEMS.length ? '<button type="button" class="btn btn-pay" data-reset>Limpar filtros</button>' : ''}
+       </div>`;
+}
+
+function buildPills(){
+  const tipos = ['Todos', ...new Set(ITEMS.map(v => v.tipo))];
+  $('#pills').innerHTML = tipos.map(t => `<button type="button" class="pill" data-tipo="${esc(t)}" aria-pressed="${state.tipo === t}">${esc(t)}</button>`).join('');
+}
+function syncPills(){
+  document.querySelectorAll('#pills .pill').forEach(p => p.setAttribute('aria-pressed', String(p.dataset.tipo === state.tipo)));
+}
+function buildBrands(){
+  const base = ITEMS.filter(v => state.tipo === 'Todos' || v.tipo === state.tipo);
+  const map = new Map();
+  base.forEach(v => { const b = brandOf(v); map.set(b, (map.get(b) || 0) + 1); });
+  const all = [...map.entries()];
+  const shown = all.filter(([b], i) => state.allBrands || i < 8 || state.marcas.has(b));
+  $('#brands').innerHTML = shown.map(([b, n]) =>
+    `<button type="button" class="brand-tile" data-marca="${esc(b)}" aria-pressed="${state.marcas.has(b)}"><span>${esc(b)}</span><small>${n}</small></button>`
+  ).join('') || '<p class="muted">Nenhuma marca.</p>';
+  const more = $('#moreBrands');
+  more.hidden = all.length <= 8;
+  more.textContent = state.allBrands ? 'Ver menos' : 'Ver mais';
+}
+function syncBrands(){
+  document.querySelectorAll('#brands .brand-tile').forEach(b => b.setAttribute('aria-pressed', String(state.marcas.has(b.dataset.marca))));
+}
+function resetAll(){
+  state.tipo = 'Todos'; state.q = ''; state.marcas.clear();
+  state.anoDe = state.anoAte = state.precoAte = null;
+  ['#busca', '#anoDe', '#anoAte', '#precoAte'].forEach(s => $(s).value = '');
+  buildPills(); buildBrands(); render();
+}
+
+/* detalhe do veículo */
+const dlg = $('#dlg'), dlgBody = $('#dlgBody');
+let current = null;
+function openDlg(i){
+  const v = ITEMS[i]; if(!v) return;
+  current = v;
+  const ph = photos(v);
+  const det = [['Tipo', v.tipo], ['Marca', brandOf(v)], ...specList(v)]
+    .map(([k, val]) => `<div><dt>${esc(k)}</dt><dd>${esc(val)}</dd></div>`).join('');
+  const thumbs = ph.length > 1
+    ? `<div class="d-thumbs">${ph.map((f, n) => `<button type="button" data-foto="${esc(f)}" aria-label="Ver foto ${n + 1}"${n === 0 ? ' aria-current="true"' : ''}><img src="${esc(f)}" alt="" loading="lazy"></button>`).join('')}</div>` : '';
+  const dest = v.destaque && v.status !== 'vendido' ? `<span class="dest ${destCls(v)}">${esc(v.destaque)}</span>` : '';
+  dlgBody.innerHTML = `<div class="d-in">
+    <div class="d-gal"><div class="frame"><div class="pic" id="dMain">${frame(v, ph[0])}</div></div>${thumbs}</div>
+    <div class="d-info">
+      <div class="d-head">
+        <div><h2 id="dTitle">${esc(v.titulo)}</h2>${v.subtitulo ? `<p class="sub">${esc(v.subtitulo)}</p>` : ''}</div>
+        <button type="button" class="d-close" data-close aria-label="Fechar">×</button>
+      </div>
+      <div class="d-price">${priceHTML(v)}${dest}</div>
+      ${v.descricao ? `<p class="d-desc">${esc(v.descricao)}</p>` : ''}
+      <dl class="d-specs">${det}</dl>
+      <div class="actions">${actions(v, true)}</div>
+    </div>
+  </div>`;
+  dlg.showModal();
+}
+dlg.addEventListener('click', e => {
+  if(e.target === dlg || e.target.closest('[data-close]')){ dlg.close(); return; }
+  const b = e.target.closest('[data-foto]');
+  if(b && current){
+    $('#dMain').innerHTML = frame(current, b.dataset.foto);
+    dlg.querySelectorAll('[data-foto]').forEach(x => x.removeAttribute('aria-current'));
+    b.setAttribute('aria-current', 'true');
+  }
+});
+
+/* eventos */
+$('#grid').addEventListener('click', e => {
+  if(e.target.closest('[data-reset]')){ resetAll(); return; }
+  const n = e.target.closest('[data-nav]');
+  if(n){ shot(n.closest('.card'), +n.dataset.nav); return; }
+  if(e.target.closest('a')) return;
+  const t = e.target.closest('[data-open]');
+  if(t) openDlg(+t.dataset.open);
+});
+$('#crumbs').addEventListener('click', e => {
+  if(e.target.closest('[data-crumb]')){ e.preventDefault(); state.tipo = 'Todos'; state.marcas.clear(); syncPills(); buildBrands(); render(); }
+});
+$('#pills').addEventListener('click', e => {
+  const p = e.target.closest('.pill'); if(!p) return;
+  state.tipo = p.dataset.tipo; state.marcas.clear(); state.allBrands = false;
+  syncPills(); buildBrands(); render();
+});
+$('#brands').addEventListener('click', e => {
+  const b = e.target.closest('.brand-tile'); if(!b) return;
+  const m = b.dataset.marca;
+  state.marcas.has(m) ? state.marcas.delete(m) : state.marcas.add(m);
+  syncBrands(); render();
+});
+$('#moreBrands').addEventListener('click', () => { state.allBrands = !state.allBrands; buildBrands(); });
+$('#busca').addEventListener('input', e => { state.q = e.target.value.trim(); render(); });
+$('#ordem').addEventListener('change', e => { state.sort = e.target.value; render(); });
+$('#anoDe').addEventListener('input', e => { state.anoDe = digits(e.target.value); render(); });
+$('#anoAte').addEventListener('input', e => { state.anoAte = digits(e.target.value); render(); });
+$('#precoAte').addEventListener('input', e => { state.precoAte = digits(e.target.value); render(); });
+$('#clear').addEventListener('click', resetAll);
+$('#filtBtn').addEventListener('click', e => {
+  const open = $('#side').classList.toggle('open');
+  e.currentTarget.setAttribute('aria-expanded', String(open));
+});
+
+/* início */
+document.title = `${LOJA.nome} | Veículos à venda`;
+$('#lojaNome').textContent = LOJA.nome;
+$('#footNome').textContent = LOJA.nome;
+$('#brandLink').setAttribute('aria-label', `${LOJA.nome}, início`);
+if(LOJA.cidade){ $('#lojaCidade').textContent = LOJA.cidade; } else { $('#loc').hidden = true; }
+$('#h1').textContent = 'Veículos à venda' + (LOJA.cidade ? ' em ' + LOJA.cidade : '');
+const oi = 'Olá! Vi o site e queria saber mais sobre os veículos.';
+$('#topWa').href = wa(oi);
+$('#navContato').href = wa(oi);
+$('#footWa').href = wa(oi);
+$('#navVender').href = wa('Olá! Quero vender meu veículo. Como funciona?');
+$('#ano').textContent = new Date().getFullYear();
+buildPills();
+buildBrands();
+render();
+</script>
+</body>
+</html>
